@@ -7,6 +7,7 @@ import { useVideoToGif } from "./_lib/useVideoToGif"
 export default function Home() {
   const asisTobeSelect = useAsisTobeSelect()
   const videoToGif = useVideoToGif()
+  const [outputType, setOutputType] = useState<"gif" | "mp4">("gif")
 
   const handleGenerateGif = useCallback(async () => {
     if (!asisTobeSelect.asis || !asisTobeSelect.tobe) {
@@ -16,19 +17,21 @@ export default function Home() {
       const result = await videoToGif.generateGif(
         asisTobeSelect.asis,
         asisTobeSelect.tobe,
-        asisTobeSelect.startSeconds
+        asisTobeSelect.startSeconds,
+        outputType
       )
       const link = document.createElement("a")
       link.href = result
-      link.download = "output.gif"
+      link.download = "output." + outputType
       link.click()
     } catch {
-      alert("GIFの生成に失敗しました")
+      alert("出力に失敗しました")
     }
   }, [
     asisTobeSelect.asis,
     asisTobeSelect.startSeconds,
     asisTobeSelect.tobe,
+    outputType,
     videoToGif,
   ])
 
@@ -46,6 +49,17 @@ export default function Home() {
         max={100}
         style={{ visibility: videoToGif.isGenerating ? "visible" : "hidden" }}
       />
+      <div className="mt-4">
+        <label className="mr-2">出力形式</label>
+        <select
+          value={outputType}
+          onChange={(e) => setOutputType(e.target.value as "gif" | "mp4")}
+          className="border rounded"
+        >
+          <option value="gif">GIF</option>
+          <option value="mp4">MP4</option>
+        </select>
+      </div>
       <button
         className="mt-4 p-2 w-full border rounded enabled:hover:bg-gray-50 disabled:bg-gray-200"
         onClick={handleGenerateGif}
@@ -55,7 +69,7 @@ export default function Home() {
           videoToGif.isGenerating
         }
       >
-        {videoToGif.isGenerating ? "処理中..." : "GIFを生成"}
+        {videoToGif.isGenerating ? "処理中..." : "出力"}
       </button>
     </main>
   )

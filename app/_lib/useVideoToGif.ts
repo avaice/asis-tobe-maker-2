@@ -12,7 +12,8 @@ type UseVideoToGifResult = {
     startSeconds: {
       asis: number
       tobe: number
-    }
+    },
+    outputType: "gif" | "mp4"
   ) => Promise<string>
   progress: number
   isGenerating: boolean
@@ -37,7 +38,8 @@ export const useVideoToGif = (): UseVideoToGifResult => {
       startSeconds: {
         asis: number
         tobe: number
-      }
+      },
+      outputType: "gif" | "mp4"
     ): Promise<string> => {
       setIsGenerating(true)
       setError(null)
@@ -80,13 +82,15 @@ export const useVideoToGif = (): UseVideoToGifResult => {
           "copy",
           "-movflags",
           "+faststart",
-          "output.gif"
+          `output.${outputType}`
         )
 
         // 生成されたGIFを読み込んでBlob URLとして返す
-        const data = ffmpeg.FS("readFile", "output.gif")
+        const data = ffmpeg.FS("readFile", "output." + outputType)
         const url = URL.createObjectURL(
-          new Blob([data.buffer], { type: "image/gif" })
+          new Blob([data.buffer], {
+            type: outputType === "gif" ? "image/gif" : "video/mp4",
+          })
         )
 
         setIsGenerating(false)
@@ -95,9 +99,9 @@ export const useVideoToGif = (): UseVideoToGifResult => {
         return url
       } catch (error) {
         console.error("エラーが発生しました:", error)
-        setError("GIFの生成に失敗しました")
+        setError("出力に失敗しました")
         setIsGenerating(false)
-        throw new Error("GIFの生成に失敗しました")
+        throw new Error("出力に失敗しました")
       }
     },
     []
