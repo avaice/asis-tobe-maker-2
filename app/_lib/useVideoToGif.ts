@@ -87,6 +87,12 @@ export const useVideoToGif = (): UseVideoToGifResult => {
 
         // 生成されたGIFを読み込んでBlob URLとして返す
         const data = ffmpeg.FS("readFile", "output." + outputType)
+        // もし容量が0Bだったらエラーを返す
+        if (data.byteLength === 0) {
+          throw new Error(
+            "出力に失敗しました。2つの動画は解像度が異なる可能性があります。"
+          )
+        }
         const url = URL.createObjectURL(
           new Blob([data.buffer], {
             type: outputType === "gif" ? "image/gif" : "video/mp4",
@@ -99,9 +105,13 @@ export const useVideoToGif = (): UseVideoToGifResult => {
         return url
       } catch (error) {
         console.error("エラーが発生しました:", error)
-        setError("出力に失敗しました")
+        setError(
+          "出力に失敗しました。非対応の動画ファイルまたは動画の解像度が異なる可能性があります。"
+        )
         setIsGenerating(false)
-        throw new Error("出力に失敗しました")
+        throw new Error(
+          "出力に失敗しました。非対応の動画ファイルまたは動画の解像度が異なる可能性があります。"
+        )
       }
     },
     []

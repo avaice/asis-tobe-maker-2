@@ -5,7 +5,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ASIS-TOBE-Maker 2",
+  title: "ASIS-TOBE Maker 2",
   description: "簡単に比較動画を作成できます",
 }
 

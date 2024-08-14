@@ -24,8 +24,8 @@ export default function Home() {
       link.href = result
       link.download = "output." + outputType
       link.click()
-    } catch {
-      alert("出力に失敗しました")
+    } catch (e: any) {
+      alert(e.message)
     }
   }, [
     asisTobeSelect.asis,
