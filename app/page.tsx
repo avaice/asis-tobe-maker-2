@@ -18,7 +18,8 @@ export default function Home() {
         asisTobeSelect.asis,
         asisTobeSelect.tobe,
         asisTobeSelect.startSeconds,
-        outputType
+        outputType,
+        asisTobeSelect.durations
       )
       const link = document.createElement("a")
       link.href = result
@@ -29,6 +30,7 @@ export default function Home() {
     }
   }, [
     asisTobeSelect.asis,
+    asisTobeSelect.durations,
     asisTobeSelect.startSeconds,
     asisTobeSelect.tobe,
     outputType,

@@ -13,7 +13,11 @@ type UseVideoToGifResult = {
       asis: number
       tobe: number
     },
-    outputType: "gif" | "mp4"
+    outputType: "gif" | "mp4",
+    durations: {
+      asis: number
+      tobe: number
+    }
   ) => Promise<string>
   progress: number
   isGenerating: boolean
@@ -39,7 +43,11 @@ export const useVideoToGif = (): UseVideoToGifResult => {
         asis: number
         tobe: number
       },
-      outputType: "gif" | "mp4"
+      outputType: "gif" | "mp4",
+      durations: {
+        asis: number
+        tobe: number
+      }
     ): Promise<string> => {
       setIsGenerating(true)
       setError(null)
@@ -68,18 +76,18 @@ export const useVideoToGif = (): UseVideoToGifResult => {
         ffmpeg.FS("writeFile", "tobe.mp4", await fetchFile(tobe))
 
         await ffmpeg.run(
+          "-ss",
+          `${(startSeconds.asis - 0.04).toString()}`,
           "-i",
           "asis.mp4",
           "-ss",
-          `${startSeconds.asis.toString()}`,
+          `${(startSeconds.tobe - 0.04).toString()}`,
           "-i",
           "tobe.mp4",
-          "-ss",
-          `${startSeconds.tobe.toString()}`,
           "-filter_complex",
-          "[0:v][1:v]hstack=inputs=2[v];[v]fps=10,scale=1280:-1,pad=1280:ih+100:0:100:black,drawtext=fontfile=noto_sans_jp.ttf:text='ASIS':x=10:y=10:fontsize=48:fontcolor=white:shadowcolor=black:shadowx=2:shadowy=2,drawtext=fontfile=noto_sans_jp.ttf:text='TOBE':x=(w-tw)/2+70:y=10:fontsize=48:fontcolor=white:shadowcolor=black:shadowx=2:shadowy=2",
-          "-c:a",
-          "copy",
+          `[0:v][1:v]hstack=inputs=2[v];[v]fps=${
+            outputType === "gif" ? "10" : "30"
+          },scale=1280:-1,pad=1280:ih+100:0:100:black,drawtext=fontfile=noto_sans_jp.ttf:text='ASIS':x=10:y=10:fontsize=48:fontcolor=white:shadowcolor=black:shadowx=2:shadowy=2,drawtext=fontfile=noto_sans_jp.ttf:text='TOBE':x=(w-tw)/2+70:y=10:fontsize=48:fontcolor=white:shadowcolor=black:shadowx=2:shadowy=2`,
           "-movflags",
           "+faststart",
           `output.${outputType}`
@@ -101,6 +109,8 @@ export const useVideoToGif = (): UseVideoToGifResult => {
 
         setIsGenerating(false)
         setProgress(100)
+
+        console.log(durations)
 
         return url
       } catch (error) {

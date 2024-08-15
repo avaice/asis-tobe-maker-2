@@ -9,6 +9,8 @@ export const useAsisTobeSelect = () => {
   const [tobeIsDragging, setTobeIsDragging] = useState(false)
   const [asisStartSecond, setAsisStartSecond] = useState(0)
   const [tobeStartSecond, setTobeStartSecond] = useState(0)
+  const [asisDuration, setAsisDuration] = useState(0)
+  const [tobeDuration, setTobeDuration] = useState(0)
 
   const asisInputRef = useRef<HTMLInputElement>(null)
   const tobeInputRef = useRef<HTMLInputElement>(null)
@@ -53,6 +55,9 @@ export const useAsisTobeSelect = () => {
               className="w-full aspect-[4/3] border rounded"
               onSeekedCapture={(e) => {
                 setAsisStartSecond(e.currentTarget.currentTime)
+              }}
+              onLoadedMetadata={(e) => {
+                setAsisDuration(e.currentTarget.duration)
               }}
             />
           </>
@@ -116,6 +121,9 @@ export const useAsisTobeSelect = () => {
               onSeekedCapture={(e) => {
                 setTobeStartSecond(e.currentTarget.currentTime)
               }}
+              onLoadedMetadata={(e) => {
+                setTobeDuration(e.currentTarget.duration)
+              }}
             />
           </>
         ) : (
@@ -171,6 +179,10 @@ export const useAsisTobeSelect = () => {
     startSeconds: {
       asis: asisStartSecond,
       tobe: tobeStartSecond,
+    },
+    durations: {
+      asis: asisDuration,
+      tobe: tobeDuration,
     },
   }
 }
